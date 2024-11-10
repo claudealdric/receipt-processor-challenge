@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestCalculateRetailerNamePoints(t *testing.T) {
 	tests := []struct {
@@ -100,5 +103,30 @@ func TestCalculatePurchaseDatePoints(t *testing.T) {
 		got, err := calculatePurchaseDatePoints(test.purchaseDate)
 		HasNoError(t, err)
 		Equals(t, got, test.want)
+	}
+}
+
+func TestCalculatePurchaseTimePoints(t *testing.T) {
+	tests := []struct {
+		purchaseTime string
+		want         int
+	}{
+		{purchaseTime: "00:00", want: 0},
+		{purchaseTime: "11:59", want: 0},
+		{purchaseTime: "12:00", want: 0},
+		{purchaseTime: "13:59", want: 0},
+		{purchaseTime: "14:00", want: 0},
+		{purchaseTime: "14:01", want: 10},
+		{purchaseTime: "15:59", want: 10},
+		{purchaseTime: "16:00", want: 0},
+		{purchaseTime: "23:59", want: 0},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("purchase time: %s", test.purchaseTime), func(t *testing.T) {
+			got, err := calculatePurchaseTimePoints(test.purchaseTime)
+			HasNoError(t, err)
+			Equals(t, got, test.want)
+		})
 	}
 }

@@ -99,3 +99,24 @@ func calculatePurchaseDatePoints(purchaseDate string) (int, error) {
 
 	return 0, nil
 }
+
+func calculatePurchaseTimePoints(purchaseTime string) (int, error) {
+	// Rule 7: 10 points if the time of purchase is after 2:00pm and before
+	// 4:00pm
+	timeVal, err := time.Parse("15:04", purchaseTime)
+	if err != nil {
+		return 0, err
+	}
+	startTime, _ := time.Parse("15:04", "14:00")
+	endTime, _ := time.Parse("15:04", "16:00")
+
+	purchaseDateTime := time.Date(0, 1, 1, timeVal.Hour(), timeVal.Minute(), 0, 0, time.UTC)
+	startDateTime := time.Date(0, 1, 1, startTime.Hour(), startTime.Minute(), 0, 0, time.UTC)
+	endDateTime := time.Date(0, 1, 1, endTime.Hour(), endTime.Minute(), 0, 0, time.UTC)
+
+	if purchaseDateTime.After(startDateTime) && purchaseDateTime.Before(endDateTime) {
+		return 10, nil
+	}
+
+	return 0, nil
+}
