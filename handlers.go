@@ -31,6 +31,39 @@ func (s *Server) HandleGetPoints(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func CalculatePoints(receipt Receipt) (int, error) {
+	var points int
+
+	retailerNamePoints := calculateRetailerNamePoints(receipt.Retailer)
+	points += retailerNamePoints
+
+	dollarTotalPoints, err := calculateDollarTotalPoints(receipt.Total)
+	if err != nil {
+		return 0, err
+	}
+	points += dollarTotalPoints
+
+	itemPoints, err := calculateItemPoints(receipt.Items)
+	if err != nil {
+		return 0, err
+	}
+	points += itemPoints
+
+	purchaseDatePoints, err := calculatePurchaseDatePoints(receipt.PurchaseDate)
+	if err != nil {
+		return 0, err
+	}
+	points += purchaseDatePoints
+
+	purchaseTimePoints, err := calculatePurchaseTimePoints(receipt.PurchaseTime)
+	if err != nil {
+		return 0, err
+	}
+	points += purchaseTimePoints
+
+	return points, nil
+}
+
 func calculateRetailerNamePoints(name string) int {
 	// Rule 1: one point for every alphanumeric character in the retailer name
 	alphanumeric := regexp.MustCompile(`[a-zA-Z0-9]`)
