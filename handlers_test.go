@@ -17,3 +17,20 @@ func TestCalculateRetailerNamePoints(t *testing.T) {
 		Equals(t, got, test.want)
 	}
 }
+
+func TestCalculateDollarTotalPoints(t *testing.T) {
+	tests := []struct {
+		dollarTotal string
+		want        int
+	}{
+		{dollarTotal: "20.00", want: 75},
+		{dollarTotal: "212.75", want: 25},
+		{dollarTotal: "1234.56", want: 0},
+	}
+
+	for _, test := range tests {
+		got, err := calculateDollarTotalPoints(test.dollarTotal)
+		HasNoError(t, err)
+		Equals(t, got, test.want)
+	}
+}

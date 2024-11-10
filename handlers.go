@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
+	"strconv"
 )
 
 type PointsResponse struct {
@@ -32,4 +33,27 @@ func calculateRetailerNamePoints(name string) int {
 	alphanumeric := regexp.MustCompile(`[a-zA-Z0-9]`)
 	matches := alphanumeric.FindAllString(name, -1)
 	return len(matches)
+}
+
+func calculateDollarTotalPoints(total string) (int, error) {
+	var points int
+
+	amount, err := strconv.ParseFloat(total, 32)
+	if err != nil {
+		return 0, err
+	}
+
+	amountInCents := int(amount * 100)
+
+	// Rule 2: 50 points if the total is a round dollar amount with no cents
+	if amountInCents%100 == 0 {
+		points += 50
+	}
+
+	// Rule 3: 25 points if the total is a multiple of 0.25
+	if amountInCents%25 == 0 {
+		points += 25
+	}
+
+	return points, nil
 }
