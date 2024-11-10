@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"regexp"
 )
 
 type PointsResponse struct {
@@ -24,4 +25,11 @@ func (s *Server) HandleGetPoints(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+func calculateRetailerNamePoints(name string) int {
+	// Rule 1: one point for every alphanumeric character in the retailer name
+	alphanumeric := regexp.MustCompile(`[a-zA-Z0-9]`)
+	matches := alphanumeric.FindAllString(name, -1)
+	return len(matches)
 }
