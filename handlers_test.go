@@ -86,3 +86,19 @@ func TestCalculateItemPoints(t *testing.T) {
 		Equals(t, got, test.want)
 	}
 }
+
+func TestCalculatePurchaseDatePoints(t *testing.T) {
+	tests := []struct {
+		purchaseDate string
+		want         int
+	}{
+		{purchaseDate: "2024-12-01", want: 6},
+		{purchaseDate: "2024-09-10", want: 0},
+	}
+
+	for _, test := range tests {
+		got, err := calculatePurchaseDatePoints(test.purchaseDate)
+		HasNoError(t, err)
+		Equals(t, got, test.want)
+	}
+}

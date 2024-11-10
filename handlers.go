@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type PointsResponse struct {
@@ -83,4 +84,18 @@ func calculateItemPoints(items []ReceiptItem) (int, error) {
 	}
 
 	return points, nil
+}
+
+func calculatePurchaseDatePoints(purchaseDate string) (int, error) {
+	// Rule 6: 6 points if the day in the purchase day is odd
+	date, err := time.Parse("2006-01-02", purchaseDate)
+	if err != nil {
+		return 0, err
+	}
+
+	if date.Day()%2 == 1 {
+		return 6, nil
+	}
+
+	return 0, nil
 }
