@@ -32,3 +32,10 @@ func HasNoError(t testing.TB, err error) {
 		t.Fatalf("didn't expect an error but got one, %v", err)
 	}
 }
+
+func HasHttpStatus(t testing.TB, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+}
