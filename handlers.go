@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type PointsResponse struct {
@@ -53,6 +55,31 @@ func calculateDollarTotalPoints(total string) (int, error) {
 	// Rule 3: 25 points if the total is a multiple of 0.25
 	if amountInCents%25 == 0 {
 		points += 25
+	}
+
+	return points, nil
+}
+
+func calculateItemPoints(items []ReceiptItem) (int, error) {
+	var points int
+
+	// Rule 4: 5 points for every two items on the receipt
+	itemCountPoints := len(items) / 2 * 5
+	points += itemCountPoints
+
+	// Rule 5: if the trimmed length of the description is a multiple of 3,
+	// multiply the price by 0.2 and round up to the nearest integer.
+	for _, item := range items {
+		trimmedDescription := strings.TrimSpace(item.ShortDescription)
+		if len(trimmedDescription)%3 != 0 {
+			continue
+		}
+		price, err := strconv.ParseFloat(item.Price, 32)
+		if err != nil {
+			continue
+		}
+		itemDescriptionPoints := int(math.Ceil(price * 0.2))
+		points += itemDescriptionPoints
 	}
 
 	return points, nil
