@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/claudealdric/receipt-processor-challenge/api"
 	"github.com/claudealdric/receipt-processor-challenge/assert"
 	"github.com/claudealdric/receipt-processor-challenge/data"
 	"github.com/claudealdric/receipt-processor-challenge/types"
@@ -17,7 +18,7 @@ func TestServer(t *testing.T) {
 	t.Run("process receipt and get the points", func(t *testing.T) {
 		// Create a new store and server
 		store := data.NewInMemoryStore()
-		server := NewServer(store)
+		server := api.NewServer(store)
 
 		// Create receipt for body
 		receipt := types.Receipt{
@@ -80,7 +81,7 @@ func TestServer(t *testing.T) {
 		// Check status code
 		assert.HasHttpStatus(t, pointsRr.Code, http.StatusOK)
 
-		var pointsResponse PointsResponse
+		var pointsResponse api.PointsResponse
 
 		err = json.NewDecoder(pointsRr.Body).Decode(&pointsResponse)
 		assert.HasNoError(t, err)
