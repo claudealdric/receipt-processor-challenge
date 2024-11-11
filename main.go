@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/claudealdric/receipt-processor-challenge/data"
 )
 
 const port = 8080
 
 func main() {
-	store := NewInMemoryStore()
+	store := data.NewInMemoryStore()
 	server := NewServer(store)
 	log.Printf("Starting server on port %d", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), server)

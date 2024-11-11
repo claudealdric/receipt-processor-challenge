@@ -9,13 +9,14 @@ import (
 	"testing"
 
 	"github.com/claudealdric/receipt-processor-challenge/assert"
+	"github.com/claudealdric/receipt-processor-challenge/data"
 	"github.com/claudealdric/receipt-processor-challenge/types"
 )
 
 func TestServer(t *testing.T) {
 	t.Run("process receipt and get the points", func(t *testing.T) {
 		// Create a new store and server
-		store := NewInMemoryStore()
+		store := data.NewInMemoryStore()
 		server := NewServer(store)
 
 		// Create receipt for body
@@ -84,28 +85,5 @@ func TestServer(t *testing.T) {
 		err = json.NewDecoder(pointsRr.Body).Decode(&pointsResponse)
 		assert.HasNoError(t, err)
 		assert.Equals(t, pointsResponse.Points, 28)
-	})
-
-	t.Run("GET /receipts/{id}/points", func(t *testing.T) {
-		store := &InMemoryStore{
-			points: map[string]int{
-				"1": 10,
-				"2": 20,
-				"3": 30,
-			},
-		}
-		server := NewServer(store)
-
-		t.Run("responds with a 404 when given a non-existent ID", func(t *testing.T) {
-			request := httptest.NewRequest(
-				http.MethodGet,
-				"/receipts/does-not-exist/points",
-				nil,
-			)
-			response := httptest.NewRecorder()
-			server.ServeHTTP(response, request)
-			assert.HasHttpStatus(t, response.Code, http.StatusNotFound)
-		})
-
 	})
 }

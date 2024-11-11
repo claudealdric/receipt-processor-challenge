@@ -1,4 +1,4 @@
-package main
+package data
 
 type Store interface {
 	GetPoints(id string) (int, error)
