@@ -9,7 +9,6 @@ import (
 
 func TestServer(t *testing.T) {
 	store := &InMemoryStore{
-		receipts: make(map[string]Receipt),
 		points: map[string]int{
 			"1": 10,
 			"2": 20,

@@ -6,15 +6,13 @@ import (
 )
 
 type InMemoryStore struct {
-	receipts map[string]Receipt
-	points   map[string]int
-	mutex    sync.RWMutex
+	points map[string]int
+	mutex  sync.RWMutex
 }
 
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
-		receipts: make(map[string]Receipt),
-		points:   make(map[string]int),
+		points: make(map[string]int),
 	}
 }
 
