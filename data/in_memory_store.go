@@ -7,6 +7,8 @@ import (
 	"sync"
 )
 
+var ErrReceiptNotFound = errors.New("No receipt found for that ID")
+
 type InMemoryStore struct {
 	points map[string]int
 	mutex  sync.RWMutex
@@ -24,7 +26,7 @@ func (s *InMemoryStore) GetPoints(receiptId string) (int, error) {
 
 	points, exists := s.points[receiptId]
 	if !exists {
-		return 0, errors.New("receipt not found")
+		return 0, ErrReceiptNotFound
 	}
 
 	return points, nil
