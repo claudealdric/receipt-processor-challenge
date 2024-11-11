@@ -11,27 +11,6 @@ import (
 	"time"
 )
 
-type PointsResponse struct {
-	Points int `json:"points"`
-}
-
-func (s *Server) HandleGetPoints(w http.ResponseWriter, r *http.Request) {
-	receiptId := r.PathValue("id")
-	points, err := s.store.GetPoints(receiptId)
-	if err != nil {
-		http.Error(w, "no receipt found for the given ID", http.StatusNotFound)
-		return
-	}
-
-	response := PointsResponse{Points: points}
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, "failed to encode response", http.StatusInternalServerError)
-		return
-	}
-}
-
 type ProcessReceiptResponse struct {
 	Id string `json:"id"`
 }
@@ -44,7 +23,7 @@ func (s *Server) HandleProcessReceipt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	points, err := CalculatePoints(receipt)
+	points, err := calculatePoints(receipt)
 	if err != nil {
 		http.Error(
 			w,
@@ -79,7 +58,7 @@ func (s *Server) HandleProcessReceipt(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func CalculatePoints(receipt Receipt) (int, error) {
+func calculatePoints(receipt Receipt) (int, error) {
 	var points int
 
 	retailerNamePoints := calculateRetailerNamePoints(receipt.Retailer)

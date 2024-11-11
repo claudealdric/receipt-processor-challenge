@@ -170,7 +170,7 @@ func TestCalculatePoints(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got, err := CalculatePoints(test.receipt)
+		got, err := calculatePoints(test.receipt)
 		HasNoError(t, err)
 		Equals(t, got, test.want)
 	}
