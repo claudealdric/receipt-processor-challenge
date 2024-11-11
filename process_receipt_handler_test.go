@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"testing"
+
+	"github.com/claudealdric/receipt-processor-challenge/assert"
 )
 
 func TestCalculateRetailerNamePoints(t *testing.T) {
@@ -17,7 +19,7 @@ func TestCalculateRetailerNamePoints(t *testing.T) {
 
 	for _, test := range tests {
 		got := calculateRetailerNamePoints(test.retailerName)
-		Equals(t, got, test.want)
+		assert.Equals(t, got, test.want)
 	}
 }
 
@@ -33,8 +35,8 @@ func TestCalculateDollarTotalPoints(t *testing.T) {
 
 	for _, test := range tests {
 		got, err := calculateDollarTotalPoints(test.dollarTotal)
-		HasNoError(t, err)
-		Equals(t, got, test.want)
+		assert.HasNoError(t, err)
+		assert.Equals(t, got, test.want)
 	}
 }
 
@@ -85,8 +87,8 @@ func TestCalculateItemPoints(t *testing.T) {
 
 	for _, test := range tests {
 		got, err := calculateItemPoints(test.items)
-		HasNoError(t, err)
-		Equals(t, got, test.want)
+		assert.HasNoError(t, err)
+		assert.Equals(t, got, test.want)
 	}
 }
 
@@ -101,8 +103,8 @@ func TestCalculatePurchaseDatePoints(t *testing.T) {
 
 	for _, test := range tests {
 		got, err := calculatePurchaseDatePoints(test.purchaseDate)
-		HasNoError(t, err)
-		Equals(t, got, test.want)
+		assert.HasNoError(t, err)
+		assert.Equals(t, got, test.want)
 	}
 }
 
@@ -125,8 +127,8 @@ func TestCalculatePurchaseTimePoints(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("purchase time: %s", test.purchaseTime), func(t *testing.T) {
 			got, err := calculatePurchaseTimePoints(test.purchaseTime)
-			HasNoError(t, err)
-			Equals(t, got, test.want)
+			assert.HasNoError(t, err)
+			assert.Equals(t, got, test.want)
 		})
 	}
 }
@@ -171,7 +173,7 @@ func TestCalculatePoints(t *testing.T) {
 
 	for _, test := range tests {
 		got, err := calculatePoints(test.receipt)
-		HasNoError(t, err)
-		Equals(t, got, test.want)
+		assert.HasNoError(t, err)
+		assert.Equals(t, got, test.want)
 	}
 }

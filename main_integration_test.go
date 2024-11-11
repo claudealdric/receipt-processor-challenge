@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/claudealdric/receipt-processor-challenge/assert"
 )
 
 func TestServer(t *testing.T) {
@@ -32,7 +34,7 @@ func TestServer(t *testing.T) {
 
 		// Create request body
 		body, err := json.Marshal(receipt)
-		HasNoError(t, err)
+		assert.HasNoError(t, err)
 
 		// Create request
 		processReceiptRequest := httptest.NewRequest(
@@ -49,14 +51,14 @@ func TestServer(t *testing.T) {
 		server.ServeHTTP(processReceiptRr, processReceiptRequest)
 
 		// Check status code
-		HasHttpStatus(t, processReceiptRr.Code, http.StatusCreated)
+		assert.HasHttpStatus(t, processReceiptRr.Code, http.StatusCreated)
 
 		var processReceiptResponse struct {
 			Id string `json:"id"`
 		}
 
 		err = json.NewDecoder(processReceiptRr.Body).Decode(&processReceiptResponse)
-		HasNoError(t, err)
+		assert.HasNoError(t, err)
 
 		if processReceiptResponse.Id == "" {
 			t.Fatal("expected a non-empty receipt ID")
@@ -74,13 +76,13 @@ func TestServer(t *testing.T) {
 		server.ServeHTTP(pointsRr, pointsRequest)
 
 		// Check status code
-		HasHttpStatus(t, pointsRr.Code, http.StatusOK)
+		assert.HasHttpStatus(t, pointsRr.Code, http.StatusOK)
 
 		var pointsResponse PointsResponse
 
 		err = json.NewDecoder(pointsRr.Body).Decode(&pointsResponse)
-		HasNoError(t, err)
-		Equals(t, pointsResponse.Points, 28)
+		assert.HasNoError(t, err)
+		assert.Equals(t, pointsResponse.Points, 28)
 	})
 
 	t.Run("GET /receipts/{id}/points", func(t *testing.T) {
@@ -101,7 +103,7 @@ func TestServer(t *testing.T) {
 			)
 			response := httptest.NewRecorder()
 			server.ServeHTTP(response, request)
-			HasHttpStatus(t, response.Code, http.StatusNotFound)
+			assert.HasHttpStatus(t, response.Code, http.StatusNotFound)
 		})
 
 	})

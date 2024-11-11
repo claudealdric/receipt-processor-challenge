@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	"github.com/claudealdric/receipt-processor-challenge/assert"
 )
 
 func TestInMemoryStore(t *testing.T) {
@@ -9,9 +11,9 @@ func TestInMemoryStore(t *testing.T) {
 		store := NewInMemoryStore()
 		points := 25
 		id, err := store.CreatePointsEntry(points)
-		HasNoError(t, err)
-		DoesNotEqual(t, id, "")
-		Equals(t, store.points[id], points)
+		assert.HasNoError(t, err)
+		assert.DoesNotEqual(t, id, "")
+		assert.Equals(t, store.points[id], points)
 	})
 
 	t.Run("GetPoints", func(t *testing.T) {
@@ -28,8 +30,8 @@ func TestInMemoryStore(t *testing.T) {
 			for _, id := range ids {
 				got, err := store.GetPoints(id)
 				want := store.points[id]
-				HasNoError(t, err)
-				Equals(t, got, want)
+				assert.HasNoError(t, err)
+				assert.Equals(t, got, want)
 			}
 		})
 
@@ -37,8 +39,8 @@ func TestInMemoryStore(t *testing.T) {
 			id := "does-not-exist"
 			got, err := store.GetPoints(id)
 			want := 0
-			HasError(t, err)
-			Equals(t, got, want)
+			assert.HasError(t, err)
+			assert.Equals(t, got, want)
 		})
 	})
 }
