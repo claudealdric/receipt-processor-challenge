@@ -5,15 +5,24 @@ import (
 )
 
 func TestInMemoryStore(t *testing.T) {
-	store := &InMemoryStore{
-		points: map[string]int{
-			"1": 10,
-			"2": 20,
-			"3": 30,
-		},
-	}
+	t.Run("CreatePointsEntry", func(t *testing.T) {
+		store := NewInMemoryStore()
+		points := 25
+		id, err := store.CreatePointsEntry(points)
+		HasNoError(t, err)
+		DoesNotEqual(t, id, "")
+		Equals(t, store.points[id], points)
+	})
 
 	t.Run("GetPoints", func(t *testing.T) {
+		store := &InMemoryStore{
+			points: map[string]int{
+				"1": 10,
+				"2": 20,
+				"3": 30,
+			},
+		}
+
 		t.Run("returns the points of the given receipt ID", func(t *testing.T) {
 			ids := []string{"1", "2", "3"}
 			for _, id := range ids {
@@ -21,7 +30,6 @@ func TestInMemoryStore(t *testing.T) {
 				want := store.points[id]
 				HasNoError(t, err)
 				Equals(t, got, want)
-
 			}
 		})
 
