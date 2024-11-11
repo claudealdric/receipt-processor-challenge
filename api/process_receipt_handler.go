@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -22,6 +23,16 @@ func (s *Server) HandleProcessReceipt(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&receipt)
 	if err != nil {
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
+	err = validateReceipt(receipt)
+	if err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("The receipt is invalid: %s", err.Error()),
+			http.StatusBadRequest,
+		)
 		return
 	}
 
@@ -181,4 +192,52 @@ func calculatePurchaseTimePoints(purchaseTime string) (int, error) {
 	}
 
 	return 0, nil
+}
+
+func validateReceipt(receipt types.Receipt) error {
+	if receipt.Retailer == "" {
+		return errors.New("retailer is required")
+	}
+
+	if receipt.PurchaseDate == "" {
+		return errors.New("purchase date is required")
+	}
+
+	if _, err := time.Parse("2006-01-02", receipt.PurchaseDate); err != nil {
+		return errors.New("invalid purchase date format; expected YYYY-MM-DD")
+	}
+
+	if receipt.PurchaseTime == "" {
+		return errors.New("purchase time is required")
+	}
+
+	if _, err := time.Parse("15:04", receipt.PurchaseTime); err != nil {
+		return errors.New("invalid purchase time format; expected HH:MM")
+	}
+
+	if receipt.Total == "" {
+		return errors.New("total is required")
+	}
+
+	if _, err := strconv.ParseFloat(receipt.Total, 32); err != nil {
+		return errors.New("invalid total; must be a valid number")
+	}
+
+	if len(receipt.Items) == 0 {
+		return errors.New("at least one item is required")
+	}
+
+	for _, item := range receipt.Items {
+		if item.ShortDescription == "" {
+			return errors.New("item short description is required")
+		}
+		if item.Price == "" {
+			return errors.New("item price is required")
+		}
+		if _, err := strconv.ParseFloat(item.Price, 32); err != nil {
+			return errors.New("invalid item price; must be a valid number")
+		}
+	}
+
+	return nil
 }
