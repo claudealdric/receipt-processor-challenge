@@ -1,37 +1,97 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestServer(t *testing.T) {
-	store := &InMemoryStore{
-		points: map[string]int{
-			"1": 10,
-			"2": 20,
-			"3": 30,
-		},
-	}
-	server := NewServer(store)
+	t.Run("process receipt and get the points", func(t *testing.T) {
+		// Create a new store and server
+		store := NewInMemoryStore()
+		server := NewServer(store)
+
+		// Create receipt for body
+		receipt := Receipt{
+			Retailer:     "Target",
+			PurchaseDate: "2022-01-01",
+			PurchaseTime: "13:01",
+			Items: []ReceiptItem{
+				{ShortDescription: "Mountain Dew 12PK", Price: "6.49"},
+				{ShortDescription: "Emils Cheese Pizza", Price: "12.25"},
+				{ShortDescription: "Knorr Creamy Chicken", Price: "1.26"},
+				{ShortDescription: "Doritos Nacho Cheese", Price: "3.35"},
+				{ShortDescription: "   Klarbrunn 12-PK 12 FL OZ  ", Price: "12.00"},
+			},
+			Total: "35.35",
+		}
+
+		// Create request body
+		body, err := json.Marshal(receipt)
+		HasNoError(t, err)
+
+		// Create request
+		processReceiptRequest := httptest.NewRequest(
+			http.MethodPost,
+			"/receipts/process",
+			bytes.NewBuffer(body),
+		)
+		processReceiptRequest.Header.Set("Content-Type", "application/json")
+
+		// Create the response recorder
+		processReceiptRr := httptest.NewRecorder()
+
+		// Process the request
+		server.ServeHTTP(processReceiptRr, processReceiptRequest)
+
+		// Check status code
+		HasHttpStatus(t, processReceiptRr.Code, http.StatusCreated)
+
+		var processReceiptResponse struct {
+			Id string `json:"id"`
+		}
+
+		err = json.NewDecoder(processReceiptRr.Body).Decode(&processReceiptResponse)
+		HasNoError(t, err)
+
+		if processReceiptResponse.Id == "" {
+			t.Fatal("expected a non-empty receipt ID")
+		}
+
+		// Make a request to get points
+		pointsRequest := httptest.NewRequest(
+			http.MethodGet,
+			fmt.Sprintf("/receipts/%s/points", processReceiptResponse.Id),
+			nil,
+		)
+		pointsRr := httptest.NewRecorder()
+
+		// Process request
+		server.ServeHTTP(pointsRr, pointsRequest)
+
+		// Check status code
+		HasHttpStatus(t, pointsRr.Code, http.StatusOK)
+
+		var pointsResponse PointsResponse
+
+		err = json.NewDecoder(pointsRr.Body).Decode(&pointsResponse)
+		HasNoError(t, err)
+		Equals(t, pointsResponse.Points, 28)
+	})
 
 	t.Run("GET /receipts/{id}/points", func(t *testing.T) {
-		t.Run("returns the points of the given, valid receipt ID", func(t *testing.T) {
-			request := httptest.NewRequest(
-				http.MethodGet,
-				"/receipts/1/points",
-				nil,
-			)
-			response := httptest.NewRecorder()
-			server.ServeHTTP(response, request)
-			HasHttpStatus(t, response.Code, http.StatusOK)
-			var pointsResponse PointsResponse
-			err := json.NewDecoder(response.Body).Decode(&pointsResponse)
-			HasNoError(t, err)
-			Equals(t, pointsResponse.Points, 10)
-		})
+		store := &InMemoryStore{
+			points: map[string]int{
+				"1": 10,
+				"2": 20,
+				"3": 30,
+			},
+		}
+		server := NewServer(store)
 
 		t.Run("responds with a 404 when given a non-existent ID", func(t *testing.T) {
 			request := httptest.NewRequest(

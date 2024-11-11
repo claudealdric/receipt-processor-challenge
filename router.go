@@ -13,11 +13,16 @@ func NewRouter(server *Server) *Router {
 	router := Router{}
 	router.Get("/{$}", func(w http.ResponseWriter, r *http.Request) {})
 	router.Get("/receipts/{id}/points", server.HandleGetPoints)
+	router.Post("/receipts/process", server.HandleProcessReceipt)
 	return &router
 }
 
 func (r *Router) Get(pattern string, handlerFunc http.HandlerFunc) {
 	r.getHandlerFuncPattern(http.MethodGet, pattern, handlerFunc)
+}
+
+func (r *Router) Post(pattern string, handlerFunc http.HandlerFunc) {
+	r.getHandlerFuncPattern(http.MethodPost, pattern, handlerFunc)
 }
 
 func (r *Router) getHandlerFuncPattern(

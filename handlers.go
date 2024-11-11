@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"net/http"
 	"regexp"
@@ -29,6 +30,53 @@ func (s *Server) HandleGetPoints(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+type ProcessReceiptResponse struct {
+	Id string `json:"id"`
+}
+
+func (s *Server) HandleProcessReceipt(w http.ResponseWriter, r *http.Request) {
+	var receipt Receipt
+	err := json.NewDecoder(r.Body).Decode(&receipt)
+	if err != nil {
+		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
+		return
+	}
+
+	points, err := CalculatePoints(receipt)
+	if err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("Error calculating points: %s", err.Error()),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	id, err := s.store.CreatePointsEntry(points)
+	if err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("Error saving receipt: %s", err.Error()),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	response := ProcessReceiptResponse{Id: id}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("Error encoding response: %s", err.Error()),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
 }
 
 func CalculatePoints(receipt Receipt) (int, error) {
