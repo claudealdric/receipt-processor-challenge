@@ -11,7 +11,6 @@ type Router struct {
 
 func NewRouter(server *Server) *Router {
 	router := Router{}
-	router.Get("/{$}", func(w http.ResponseWriter, r *http.Request) {})
 	router.Get("/receipts/{id}/points", server.HandleGetPoints)
 	router.Post("/receipts/process", server.HandleProcessReceipt)
 	return &router
