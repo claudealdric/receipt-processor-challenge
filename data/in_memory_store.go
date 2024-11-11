@@ -36,7 +36,7 @@ func (s *InMemoryStore) CreatePointsEntry(points int) (id string, err error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	id, err = s.createId()
+	id, err = createId()
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +46,7 @@ func (s *InMemoryStore) CreatePointsEntry(points int) (id string, err error) {
 	return id, nil
 }
 
-func (s *InMemoryStore) createId() (id string, err error) {
+func createId() (id string, err error) {
 	uuid := make([]byte, 16)
 	_, err = rand.Read(uuid)
 	if err != nil {
