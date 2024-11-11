@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/claudealdric/receipt-processor-challenge/assert"
+	"github.com/claudealdric/receipt-processor-challenge/types"
 )
 
 func TestCalculateRetailerNamePoints(t *testing.T) {
@@ -42,11 +43,11 @@ func TestCalculateDollarTotalPoints(t *testing.T) {
 
 func TestCalculateItemPoints(t *testing.T) {
 	tests := []struct {
-		items []ReceiptItem
+		items []types.ReceiptItem
 		want  int
 	}{
 		{
-			items: []ReceiptItem{
+			items: []types.ReceiptItem{
 				{
 					ShortDescription: "Mountain Dew 12PK", // len: 17
 					Price:            "6.49",
@@ -71,7 +72,7 @@ func TestCalculateItemPoints(t *testing.T) {
 			want: 16,
 		},
 		{
-			items: []ReceiptItem{
+			items: []types.ReceiptItem{
 				{
 					ShortDescription: "Gatorade",
 					Price:            "2.25",
@@ -135,15 +136,15 @@ func TestCalculatePurchaseTimePoints(t *testing.T) {
 
 func TestCalculatePoints(t *testing.T) {
 	tests := []struct {
-		receipt Receipt
+		receipt types.Receipt
 		want    int
 	}{
 		{
-			receipt: Receipt{
+			receipt: types.Receipt{
 				Retailer:     "Target",
 				PurchaseDate: "2022-01-01",
 				PurchaseTime: "13:01",
-				Items: []ReceiptItem{
+				Items: []types.ReceiptItem{
 					{
 						ShortDescription: "Mountain Dew 12PK",
 						Price:            "6.49",

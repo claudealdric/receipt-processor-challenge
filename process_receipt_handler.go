@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/claudealdric/receipt-processor-challenge/types"
 )
 
 type ProcessReceiptResponse struct {
@@ -16,7 +18,7 @@ type ProcessReceiptResponse struct {
 }
 
 func (s *Server) HandleProcessReceipt(w http.ResponseWriter, r *http.Request) {
-	var receipt Receipt
+	var receipt types.Receipt
 	err := json.NewDecoder(r.Body).Decode(&receipt)
 	if err != nil {
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
@@ -58,7 +60,7 @@ func (s *Server) HandleProcessReceipt(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func calculatePoints(receipt Receipt) (int, error) {
+func calculatePoints(receipt types.Receipt) (int, error) {
 	var points int
 
 	retailerNamePoints := calculateRetailerNamePoints(receipt.Retailer)
@@ -121,7 +123,7 @@ func calculateDollarTotalPoints(total string) (int, error) {
 	return points, nil
 }
 
-func calculateItemPoints(items []ReceiptItem) (int, error) {
+func calculateItemPoints(items []types.ReceiptItem) (int, error) {
 	var points int
 
 	// Rule 4: 5 points for every two items on the receipt

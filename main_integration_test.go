@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/claudealdric/receipt-processor-challenge/assert"
+	"github.com/claudealdric/receipt-processor-challenge/types"
 )
 
 func TestServer(t *testing.T) {
@@ -18,11 +19,11 @@ func TestServer(t *testing.T) {
 		server := NewServer(store)
 
 		// Create receipt for body
-		receipt := Receipt{
+		receipt := types.Receipt{
 			Retailer:     "Target",
 			PurchaseDate: "2022-01-01",
 			PurchaseTime: "13:01",
-			Items: []ReceiptItem{
+			Items: []types.ReceiptItem{
 				{ShortDescription: "Mountain Dew 12PK", Price: "6.49"},
 				{ShortDescription: "Emils Cheese Pizza", Price: "12.25"},
 				{ShortDescription: "Knorr Creamy Chicken", Price: "1.26"},

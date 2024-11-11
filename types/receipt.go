@@ -1,4 +1,4 @@
-package main
+package types
 
 type Receipt struct {
 	Retailer     string        `json:"retailer"`
