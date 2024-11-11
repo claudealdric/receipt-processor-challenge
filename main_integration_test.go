@@ -19,7 +19,11 @@ func TestServer(t *testing.T) {
 
 	t.Run("GET /receipts/{id}/points", func(t *testing.T) {
 		t.Run("returns the points of the given, valid receipt ID", func(t *testing.T) {
-			request := httptest.NewRequest(http.MethodGet, "/receipts/1/points", nil)
+			request := httptest.NewRequest(
+				http.MethodGet,
+				"/receipts/1/points",
+				nil,
+			)
 			response := httptest.NewRecorder()
 			server.ServeHTTP(response, request)
 			HasHttpStatus(t, response.Code, http.StatusOK)
@@ -30,7 +34,11 @@ func TestServer(t *testing.T) {
 		})
 
 		t.Run("responds with a 404 when given a non-existent ID", func(t *testing.T) {
-			request := httptest.NewRequest(http.MethodGet, "/receipts/does-not-exist/points", nil)
+			request := httptest.NewRequest(
+				http.MethodGet,
+				"/receipts/does-not-exist/points",
+				nil,
+			)
 			response := httptest.NewRecorder()
 			server.ServeHTTP(response, request)
 			HasHttpStatus(t, response.Code, http.StatusNotFound)
