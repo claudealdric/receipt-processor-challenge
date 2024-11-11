@@ -38,7 +38,9 @@ func (s *InMemoryStore) CreatePointsEntry(points int) (id string, err error) {
 	if err != nil {
 		return "", err
 	}
+
 	s.points[id] = points
+
 	return id, nil
 }
 
